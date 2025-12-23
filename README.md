@@ -2,26 +2,14 @@
 
 This is an Angular/Typescript workspace using library projects.
 
-(I am using Visual Studio Code on Windows 10 to work on the project.)
+(I am using Visual Studio Code on Windows 11 to work on the project.)
 
 ## How to build
-
-#### Install the prerequisites
-
-I guess on a fresh Windows machine you would want to install in this order:
-
-* Chrome browser (optional but recommended for development)
-* [Visual Studio Code](https://code.visualstudio.com/download)
-* [git](https://git-scm.com/)
-* [node/npm and angular-cli](https://angular.io/guide/quickstart)
-* [yarn package manager](https://yarnpkg.com/lang/en/)
-
-Install *Visual Studio Code* before you install *git* so **Code** can be selected as an editor for **git** commit messages, when the git-installer asks.
 
 #### Get the code
 
 * Clone the repository
-* Run yarn from the console, or npm install.
+* Run npm install.
 
 #### build the project libraries first
 
@@ -79,6 +67,3 @@ Currently the api is good for connection with central Delphi app or a light weig
 FR01 is the default and innocent test application. You will need to create a similar application project and add stuff - authentication, communication, api calls, all the things you may need and which are specific to your use case.
 
 FR is a family of applications. Names up to FR99 are already taken. FR100 and above is reserved for end user projects.
-
----
-03.05.2019

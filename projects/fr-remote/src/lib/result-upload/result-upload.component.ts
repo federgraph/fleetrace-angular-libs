@@ -1,24 +1,28 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, inject } from '@angular/core';
 import { TBOManager } from 'fleetrace';
 import { JsonInfo, RaceDataJson } from 'fr-local';
+import { JsonPipe } from '@angular/common';
 import { ApiService } from '../shared/api.service';
 
 @Component({
   selector: 'fr-result-upload',
   templateUrl: './result-upload.component.html',
-  styleUrls: ['./result-upload.component.scss']
+  styleUrls: ['./result-upload.component.scss'],
+  imports: [JsonPipe],
 })
 export class ResultUploadComponent implements OnInit {
+  @Input() race = 1;
 
-  @Input() race: number = 1;
-
-  Info: string = 'info';
+  Info = 'info';
   TestOutput: any = '';
 
   jsonInfo: JsonInfo;
 
-  constructor(public BOManager: TBOManager, private apiService: ApiService) {
-    this.jsonInfo = new JsonInfo(BOManager);
+  public BOManager = inject(TBOManager);
+  private apiService = inject(ApiService);
+
+  constructor() {
+    this.jsonInfo = new JsonInfo(this.BOManager);
   }
 
   ngOnInit() {
@@ -33,7 +37,7 @@ export class ResultUploadComponent implements OnInit {
   post() {
     this.Info = `post() called for race ${this.race}`;
     const t: RaceDataJson = this.jsonInfo.getRaceDataJson(this.race);
-    this.apiService.push3(t).subscribe(data => this.TestOutput = data.retvalue);
+    this.apiService.push3(t).subscribe((data) => (this.TestOutput = data.retvalue));
     this.TestOutput = '';
   }
 
@@ -41,5 +45,4 @@ export class ResultUploadComponent implements OnInit {
     this.Info = 'info';
     this.TestOutput = 'Json Preview to be shown here.';
   }
-
 }

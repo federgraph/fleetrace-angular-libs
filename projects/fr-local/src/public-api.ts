@@ -2,6 +2,8 @@
  * Public API Surface of fr-local
  */
 
+export * from './lib/fr-local';
+
 export * from './lib/fr-local.module';
 
 export * from './lib/shared/data-model';

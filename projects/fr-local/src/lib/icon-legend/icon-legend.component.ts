@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TBOManager } from 'fleetrace';
 import {
   IconData,
@@ -15,21 +15,23 @@ import {
   MsgEdit2Icons,
   EventIcons,
   RaceIcons,
-  EntriesIcons
+  EntriesIcons,
 } from './icon-data';
 
 import { IconPool } from '../icon-bar-legend/icon-pool';
+import { IconBarLegendComponent } from '../icon-bar-legend/icon-bar-legend.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'fr-icon-legend',
   templateUrl: './icon-legend.component.html',
-  styleUrls: ['./icon-legend.component.css']
+  styleUrls: ['./icon-legend.component.css'],
+  imports: [IconBarLegendComponent, MatIconModule],
 })
 export class IconLegendComponent {
-
   toolbarIcons: IconData[];
-
   eventNavIcons: IconData[];
+
   iconbarIcons: IconData[];
   explorerbarIcons: IconData[];
 
@@ -49,7 +51,9 @@ export class IconLegendComponent {
   pool: string[];
   PoolVisible = false;
 
-  constructor(public BOManager: TBOManager) {
+  public BOManager = inject(TBOManager);
+
+  constructor() {
     this.toolbarIcons = IconData.readIconData(ToolbarIcons);
 
     this.eventNavIcons = IconData.readIconData(EventNavIcons);
@@ -64,10 +68,8 @@ export class IconLegendComponent {
     this.msgEdit1Icons = IconData.readIconData(MsgEdit1Icons);
     this.msgEdit2Icons = IconData.readIconData(MsgEdit2Icons);
     this.preparebarIcons = IconData.readIconData(PreparebarIcons);
-
     this.textAreaIcons = IconData.readIconData(TextAreaIcons);
     this.preTextIcons = IconData.readIconData(PreTextIcons);
-
     this.eventIcons = IconData.readIconData(EventIcons);
     this.raceIcons = IconData.readIconData(RaceIcons);
     this.entriesIcons = IconData.readIconData(EntriesIcons);

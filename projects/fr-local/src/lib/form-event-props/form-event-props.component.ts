@@ -1,38 +1,51 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, OnInit, Output, EventEmitter, inject } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { EventProps, NameFieldSchemaStrings, ScoringSystemStrings } from '../shared/data-model';
 
 import { TBOManager } from 'fleetrace';
-
+import { MatOption } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'fr-form-event-props',
   templateUrl: './form-event-props.component.html',
-  styleUrls: ['./form-event-props.component.css']
+  styleUrls: ['./form-event-props.component.css'],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    MatOption,
+    MatFormFieldModule,
+    MatIconModule,
+    JsonPipe,
+  ],
 })
 export class FormEventPropsComponent implements OnInit {
-
-  JsonVisible: boolean = false;
+  JsonVisible = false;
   form: FormGroup;
   formData: EventProps;
 
   systems = ScoringSystemStrings;
   schemas = NameFieldSchemaStrings;
 
-  @Output() propsChanged: EventEmitter<EventProps> = new EventEmitter();
+  @Output() propsChanged = new EventEmitter<EventProps>();
 
   ngOnInit() {
     this.createForm();
   }
 
-  constructor(public BOManager: TBOManager, private fb: FormBuilder) {
+  public BOManager = inject(TBOManager);
+  private fb = inject(FormBuilder);
+
+  constructor() {
     this.formData = new EventProps();
   }
 
   createForm() {
     this.form = this.fb.group({
-      props: this.fb.group(new EventProps())
+      props: this.fb.group(new EventProps()),
     });
   }
 
@@ -44,7 +57,7 @@ export class FormEventPropsComponent implements OnInit {
     this.formData.isTimed = ep.IsTimed;
 
     this.form.patchValue({
-      props: this.formData
+      props: this.formData,
     });
   }
 
@@ -61,12 +74,11 @@ export class FormEventPropsComponent implements OnInit {
 
   rebuildForm() {
     this.form.reset({
-      props: this.formData
+      props: this.formData,
     });
   }
 
   toggleJson() {
-    this.JsonVisible = ! this.JsonVisible;
+    this.JsonVisible = !this.JsonVisible;
   }
-
 }

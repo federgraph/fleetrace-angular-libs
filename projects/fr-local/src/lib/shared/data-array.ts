@@ -5,7 +5,6 @@ import { TExcelExporter } from 'fleetrace';
 import { TStringList } from 'fleetrace';
 
 export class JsonInfo {
-
   ee: TExcelExporter;
 
   constructor(public BOManager: TBOManager) {
@@ -146,7 +145,7 @@ export class JsonInfo {
     }
   }
 
-  getTimeLists(): Array<Array<string>> {
+  getTimeLists(): string[][] {
     const bo = this.BOManager.BO;
     if (bo.BOParams.ITCount > 0 || bo.EventProps.IsTimed) {
       const a = [];
@@ -158,7 +157,7 @@ export class JsonInfo {
     return null;
   }
 
-  getPenaltyLists(): Array<Array<string>> {
+  getPenaltyLists(): string[][] {
     const bo = this.BOManager.BO;
     const a = [];
     for (let r = 1; r <= bo.BOParams.RaceCount; r++) {
@@ -192,7 +191,7 @@ export class JsonInfo {
       temp = this.getTimeLists();
       if (temp) {
         o.TimingInfo = temp;
-    }
+      }
     }
 
     o.PenaltyInfo = this.getPenaltyLists();
@@ -236,7 +235,6 @@ export class JsonInfo {
   }
 
   convertEventDataJson(o: EventDataJson): string[] {
-
     const a: string[] = [];
 
     for (const s1 of o.EventParams) {
@@ -280,12 +278,11 @@ export class JsonInfo {
         if (pi.length > 0) {
           for (const s8 of pi) {
             a.push(s8);
-      }
+          }
         }
       }
     }
 
     return a;
   }
-
 }

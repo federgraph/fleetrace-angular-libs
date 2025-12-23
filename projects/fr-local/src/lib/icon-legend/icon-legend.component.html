@@ -14,18 +14,21 @@
 <fr-icon-bar-legend [caption]="'Event'" [bar]="eventIcons"></fr-icon-bar-legend>
 <fr-icon-bar-legend [caption]="'Race'" [bar]="raceIcons"></fr-icon-bar-legend>
 
-<ng-container *ngIf="PoolVisible">
+@if (PoolVisible) {
+  <ng-container>
+    <h3>Icon Pool</h3>
 
-<h3>Icon Pool</h3>
-
-<ul>
-  <li *ngFor="let i of pool">
-    <button mat-icon-button>
-      <mat-icon>{{i}}</mat-icon>
-    </button>
-    <span>{{i}}</span>
-  </li>
-</ul>
-</ng-container>
+    <ul>
+      @for (i of pool; track i) {
+        <li>
+          <button mat-icon-button>
+            <mat-icon>{{ i }}</mat-icon>
+          </button>
+          <span>{{ i }}</span>
+        </li>
+      }
+    </ul>
+  </ng-container>
+}
 
 <button mat-raised-button (click)="togglePool()">Pool</button>

@@ -2,8 +2,6 @@
  * Public API Surface of scoring
  */
 
-export * from './lib/scoring.module';
-
 export * from './lib/scoring-bonus-point-dsv';
 export * from './lib/scoring-bonus-point';
 export * from './lib/scoring-entry-list';

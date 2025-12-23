@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,9 +13,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatListModule } from '@angular/material/list';
-
-import {ScoringModule} from 'scoring';
-import {FleetRaceModule} from 'fleetrace';
 
 import { BibComponent } from './bib/bib.component';
 import { EntriesComponent } from './entries/entries.component';
@@ -41,7 +37,7 @@ import { TimingButtonsComponent } from './timing-buttons/timing-buttons.componen
 import { TimingWidgetComponent } from './timing-widget/timing-widget.component';
 
 @NgModule({
-  declarations: [
+  imports: [
     BibComponent,
     EntriesComponent,
     RaceComponent,
@@ -57,9 +53,6 @@ import { TimingWidgetComponent } from './timing-widget/timing-widget.component';
     ResultHashComponent,
     TimingButtonsComponent,
     TimingWidgetComponent,
-  ],
-  imports: [
-    BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
     LayoutModule,
@@ -75,8 +68,6 @@ import { TimingWidgetComponent } from './timing-widget/timing-widget.component';
     MatTooltipModule,
     MatSnackBarModule,
     MatBadgeModule,
-    ScoringModule,
-    FleetRaceModule,
   ],
   exports: [
     BibComponent,
@@ -94,6 +85,6 @@ import { TimingWidgetComponent } from './timing-widget/timing-widget.component';
     ResultHashComponent,
     TimingButtonsComponent,
     TimingWidgetComponent,
-  ]
+  ],
 })
-export class FrLocalModule { }
+export class FrLocalModule {}

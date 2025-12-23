@@ -1,27 +1,25 @@
-import { Component, OnInit, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, SimpleChanges, inject } from '@angular/core';
 import { TBOManager } from 'fleetrace';
 import { TEventRaceEntry } from 'fleetrace';
 
 @Component({
   selector: 'fr-bib-tab',
   templateUrl: './bib.component.html',
-  styleUrls: ['./bib.component.css']
+  styleUrls: ['./bib.component.css'],
 })
 export class BibComponent implements OnInit, OnChanges {
+  @Input() bib = 0;
 
-  @Input() bib: number = 0;
+  dn = '';
+  nc = '';
+  series = '';
+  result = 0;
 
-  dn: string = '';
-  nc: string = '';
-  series: string = '';
-  result: number = 0;
+  public BOManager = inject(TBOManager);
 
-  constructor(public BOManager: TBOManager) {
+  constructor() {}
 
-  }
-
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   ngOnChanges(changes: SimpleChanges) {
     this.update();
@@ -55,5 +53,4 @@ export class BibComponent implements OnInit, OnChanges {
       this.series = t;
     }
   }
-
 }

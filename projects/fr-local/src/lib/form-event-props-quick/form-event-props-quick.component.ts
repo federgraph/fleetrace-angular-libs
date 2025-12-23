@@ -1,34 +1,39 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, inject } from '@angular/core';
 import { EventProps, ScoringSystemStrings, NameFieldSchemaStrings } from '../shared/data-model';
 import { TBOManager } from 'fleetrace';
 import { TScoringSystem } from 'fleetrace';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatRadioButton } from '@angular/material/radio';
+import { MatFormField } from '@angular/material/form-field';
+import { MatOption } from '@angular/material/select';
 
 @Component({
   selector: 'fr-form-event-props-quick',
   templateUrl: './form-event-props-quick.component.html',
-  styleUrls: ['./form-event-props-quick.component.scss']
+  styleUrls: ['./form-event-props-quick.component.scss'],
+  imports: [MatCheckbox, ReactiveFormsModule, FormsModule, MatRadioButton, MatFormField, MatOption],
 })
 export class FormEventPropsQuickComponent implements OnInit {
-
   RadioBarVisible = true;
   SelectsVisible = false;
 
   systems = ScoringSystemStrings;
   schemas = NameFieldSchemaStrings;
 
-  @Output() propsChanged: EventEmitter<EventProps> = new EventEmitter();
+  @Output() propsChanged = new EventEmitter<EventProps>();
 
   system = 0;
   schema = 0;
 
-  eventName: string = 'Event Name';
+  eventName = 'Event Name';
   scoringSystem: TScoringSystem = TScoringSystem.LowPoint;
   schemaCode: number;
   isTimed: boolean;
 
-  constructor(public BOManager: TBOManager) {
+  public BOManager = inject(TBOManager);
 
-  }
+  constructor() {}
 
   ngOnInit() {
     this.patch();
@@ -61,5 +66,4 @@ export class FormEventPropsQuickComponent implements OnInit {
     ep.isTimed = this.isTimed;
     this.propsChanged.emit(ep);
   }
-
 }

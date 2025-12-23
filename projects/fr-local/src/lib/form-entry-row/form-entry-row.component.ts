@@ -1,25 +1,31 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, Output, EventEmitter, inject } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { EntryRow } from '../shared/data-model';
 
 import { TBOManager } from 'fleetrace';
+import { MatFormField } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'fr-form-entry-row',
   templateUrl: './form-entry-row.component.html',
-  styleUrls: ['./form-entry-row.component.css']
+  styleUrls: ['./form-entry-row.component.css'],
+  imports: [ReactiveFormsModule, JsonPipe, MatFormField, MatIcon],
 })
 export class FormEntryRowComponent implements OnInit {
-
-  JsonVisible: boolean = false;
+  JsonVisible = false;
   form: FormGroup;
   formData: EntryRow;
 
-  @Output() entryRowChanged: EventEmitter<EntryRow> = new EventEmitter();
-  @Output() entryDeleted: EventEmitter<number> = new EventEmitter();
+  @Output() entryRowChanged = new EventEmitter<EntryRow>();
+  @Output() entryDeleted = new EventEmitter<number>();
 
-  constructor(public BOManager: TBOManager, private fb: FormBuilder) {
+  public BOManager = inject(TBOManager);
+  private fb = inject(FormBuilder);
+
+  constructor() {
     this.formData = new EntryRow();
   }
 
@@ -29,9 +35,12 @@ export class FormEntryRowComponent implements OnInit {
 
   createForm() {
     this.form = this.fb.group({
-      entry: this.fb.group(new EntryRow())
+      entry: this.fb.group(new EntryRow()),
     });
-    this.form.get('entry.SNR').setValidators([Validators.required, Validators.min(1), Validators.max(10000)]);
+
+    this.form
+      .get('entry.SNR')
+      .setValidators([Validators.required, Validators.min(1), Validators.max(10000)]);
   }
 
   delete() {
@@ -62,7 +71,7 @@ export class FormEntryRowComponent implements OnInit {
         this.formData.N6 = cr.PB;
 
         this.form.patchValue({
-          entry: this.formData
+          entry: this.formData,
         });
       }
     }
@@ -85,12 +94,11 @@ export class FormEntryRowComponent implements OnInit {
 
   rebuildForm() {
     this.form.reset({
-       entry: this.formData
+      entry: this.formData,
     });
   }
 
   toggleJson() {
     this.JsonVisible = !this.JsonVisible;
   }
-
 }

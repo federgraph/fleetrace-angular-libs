@@ -1,26 +1,31 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, inject } from '@angular/core';
 import { TBOManager } from 'fleetrace';
 import { TStammdatenColGrid, TSimpleStammdatenGrid } from 'fleetrace';
 import { TStammdatenNode } from 'fleetrace';
 import { TTable } from 'fleetrace';
 import { IconData, EntriesIcons } from '../icon-legend/icon-data';
+import { MaterialModule } from '../material/material.module';
+import { IconBarLegendComponent } from '../icon-bar-legend/icon-bar-legend.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'fr-entries-tab',
+  imports: [CommonModule, MaterialModule, IconBarLegendComponent],
   templateUrl: './entries.component.html',
-  styleUrls: ['./entries.component.css']
+  styleUrls: ['./entries.component.css'],
 })
 export class EntriesComponent {
-
   ColGrid: TStammdatenColGrid;
   ColTable: TTable;
 
-  @Output() entriesTableChanged: EventEmitter<number> = new EventEmitter();
+  @Output() entriesTableChanged = new EventEmitter<number>();
 
   legend: IconData[];
   LegendVisible = false;
 
-  constructor(public BOManager: TBOManager) {
+  public BOManager = inject(TBOManager);
+
+  constructor() {
     this.initAndShow();
     this.legend = IconData.readIconData(EntriesIcons);
   }
@@ -185,7 +190,6 @@ export class EntriesComponent {
   }
 
   toggleLegend() {
-    this.LegendVisible = ! this.LegendVisible;
+    this.LegendVisible = !this.LegendVisible;
   }
-
 }

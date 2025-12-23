@@ -1,30 +1,36 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { TBOManager } from 'fleetrace';
 import { TEventColGrid, TSimpleEventGrid } from 'fleetrace';
 import { TEventNode } from 'fleetrace';
 import { TTable } from 'fleetrace';
 import { TColorMode } from 'fleetrace';
 import { IconData, EventIcons } from '../icon-legend/icon-data';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
+import { IconBarLegendComponent } from '../icon-bar-legend/icon-bar-legend.component';
 
 @Component({
   selector: 'fr-event-tab',
+  imports: [CommonModule, ReactiveFormsModule, MatIcon, IconBarLegendComponent],
   templateUrl: './event.component.html',
-  styleUrls: ['./event.component.css']
+  styleUrls: ['./event.component.css'],
 })
 export class EventComponent {
-
   @Input() EventName = 'Event Name';
 
   ColGrid: TEventColGrid;
 
-  ColorBtnCaption: string = '';
+  ColorBtnCaption = '';
 
   ColTable: TTable;
 
   legend: IconData[];
   LegendVisible = false;
 
-  constructor(public BOManager: TBOManager) {
+  public BOManager = inject(TBOManager);
+
+  constructor() {
     this.initGrid();
     this.BOManager.BO.EventProps.DetailUrl = 'DetailUrl';
 
@@ -157,19 +163,31 @@ export class EventComponent {
     this.show();
   }
 
-  colorBtnClick(value: number = 0) {
+  colorBtnClick(value = 0) {
     let cm: TColorMode = this.BOManager.BO.EventNode.ColorMode;
     switch (value) {
       case 0:
         switch (cm) {
-          case TColorMode.ColorMode_None: cm = TColorMode.ColorMode_Error; break;
-          case TColorMode.ColorMode_Error: cm = TColorMode.ColorMode_Fleet; break;
-          case TColorMode.ColorMode_Fleet: cm = TColorMode.ColorMode_None; break;
+          case TColorMode.ColorMode_None:
+            cm = TColorMode.ColorMode_Error;
+            break;
+          case TColorMode.ColorMode_Error:
+            cm = TColorMode.ColorMode_Fleet;
+            break;
+          case TColorMode.ColorMode_Fleet:
+            cm = TColorMode.ColorMode_None;
+            break;
         }
         break;
-      case 1: cm = TColorMode.ColorMode_None; break;
-      case 2: cm = TColorMode.ColorMode_Error; break;
-      case 3: cm = TColorMode.ColorMode_Fleet; break;
+      case 1:
+        cm = TColorMode.ColorMode_None;
+        break;
+      case 2:
+        cm = TColorMode.ColorMode_Error;
+        break;
+      case 3:
+        cm = TColorMode.ColorMode_Fleet;
+        break;
     }
     this.BOManager.BO.EventNode.ColorMode = cm;
     this.updateColorBtnCaption();
@@ -178,9 +196,15 @@ export class EventComponent {
 
   updateColorBtnCaption() {
     switch (this.BOManager.BO.EventNode.ColorMode) {
-      case TColorMode.ColorMode_None: this.ColorBtnCaption = 'Color N'; break;
-      case TColorMode.ColorMode_Error: this.ColorBtnCaption = 'Color E'; break;
-      case TColorMode.ColorMode_Fleet: this.ColorBtnCaption = 'Color F'; break;
+      case TColorMode.ColorMode_None:
+        this.ColorBtnCaption = 'Color N';
+        break;
+      case TColorMode.ColorMode_Error:
+        this.ColorBtnCaption = 'Color E';
+        break;
+      case TColorMode.ColorMode_Fleet:
+        this.ColorBtnCaption = 'Color F';
+        break;
     }
   }
 
@@ -198,7 +222,6 @@ export class EventComponent {
   }
 
   toggleLegend() {
-    this.LegendVisible = ! this.LegendVisible;
+    this.LegendVisible = !this.LegendVisible;
   }
-
 }

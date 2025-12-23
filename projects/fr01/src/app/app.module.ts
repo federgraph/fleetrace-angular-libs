@@ -1,8 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -15,25 +13,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatListModule } from '@angular/material/list';
-import { MatToolbarModule  } from '@angular/material/toolbar';
-
-import { ScoringModule } from 'scoring';
-import { FleetRaceModule } from 'fleetrace';
-import { FrLocalModule } from 'fr-local';
-import { FrRemoteModule } from 'fr-remote';
-
-import { AppComponent } from './app.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
   imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule,
     LayoutModule,
     MatFormFieldModule,
     MatInputModule,
@@ -48,13 +35,8 @@ import { AppComponent } from './app.component';
     MatTooltipModule,
     MatSnackBarModule,
     MatBadgeModule,
-    ScoringModule,
-    FleetRaceModule,
-    FrLocalModule,
-    FrRemoteModule,
+    MatToolbarModule,
   ],
-  providers: [
-  ],
-  bootstrap: [AppComponent]
+  providers: [],
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,14 +1,18 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { TBOManager } from 'fleetrace';
 import { TRaceColGrid, TSimpleRaceGrid } from 'fleetrace';
 import { TRaceNode } from 'fleetrace';
 import { TTable } from 'fleetrace';
 import { IconData, RaceIcons } from '../icon-legend/icon-data';
+import { MatIcon } from '@angular/material/icon';
+import { IconBarLegendComponent } from '../icon-bar-legend/icon-bar-legend.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'fr-race-tab',
   templateUrl: './race.component.html',
-  styleUrls: ['./race.component.css']
+  styleUrls: ['./race.component.css'],
+  imports: [CommonModule, MatIcon, IconBarLegendComponent],
 })
 export class RaceComponent {
   FRace = 1;
@@ -48,7 +52,9 @@ export class RaceComponent {
     this.show();
   }
 
-  constructor(public BOManager: TBOManager) {
+  public BOManager = inject(TBOManager);
+
+  constructor() {
     this.initGrid();
     this.legend = IconData.readIconData(RaceIcons);
   }
@@ -97,7 +103,6 @@ export class RaceComponent {
     } else {
       console.log(`out of range: RNode[${this.race}] in race.component.calc `);
     }
-
   }
 
   clearRace() {
@@ -155,8 +160,8 @@ export class RaceComponent {
   fromMRank() {
     const ru = this.BOManager.BO.RNode[this.race];
     if (ru) {
-    ru.CopyFromMRank();
-    this.show();
+      ru.CopyFromMRank();
+      this.show();
     } else {
       console.log(`out of range: RNode[${this.race}} in race.component.fromMRank`);
     }
@@ -165,8 +170,8 @@ export class RaceComponent {
   clearMark() {
     const ru = this.BOManager.BO.RNode[this.race];
     if (ru) {
-    ru.ColBO.CurrentRow = null;
-  }
+      ru.ColBO.CurrentRow = null;
+    }
   }
 
   mark(bib: number) {
@@ -182,5 +187,4 @@ export class RaceComponent {
   toggleLegend() {
     this.LegendVisible = !this.LegendVisible;
   }
-
 }

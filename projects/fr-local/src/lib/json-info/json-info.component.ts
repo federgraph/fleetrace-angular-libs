@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, Input } from '@angular/core';
+﻿import { Component, OnInit, Input, inject } from '@angular/core';
 import { TBOManager } from 'fleetrace';
 import {
   EventDataJson,
@@ -7,18 +7,20 @@ import {
   NameTableJson,
   StartListJson,
   FinishInfoJson,
-  FleetListJson } from '../shared/data-model';
+  FleetListJson,
+} from '../shared/data-model';
 import { TExcelExporter } from 'fleetrace';
 import { JsonInfo } from '../shared/data-array';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'fr-json-info',
   templateUrl: './json-info.component.html',
-  styleUrls: ['./json-info.component.css']
+  styleUrls: ['./json-info.component.css'],
+  imports: [JsonPipe],
 })
 export class JsonInfoComponent implements OnInit {
-
-  @Input() race: number = 1;
+  @Input() race = 1;
 
   output: any = 'Json Output to be shown here.';
 
@@ -26,14 +28,14 @@ export class JsonInfoComponent implements OnInit {
 
   jsonInfo: JsonInfo;
 
-  constructor(public BOManager: TBOManager) {
+  public BOManager = inject(TBOManager);
+
+  constructor() {
     this.ee = new TExcelExporter();
-    this.jsonInfo = new JsonInfo(BOManager);
+    this.jsonInfo = new JsonInfo(this.BOManager);
   }
 
-  ngOnInit() {
-
-  }
+  ngOnInit() {}
 
   eventParams() {
     const o: EventParamsJson = new EventParamsJson();
@@ -111,6 +113,8 @@ export class JsonInfoComponent implements OnInit {
   }
 
   eventDataArray() {
+    const includeEmptyList = false;
+
     const o: EventDataJson = this.jsonInfo.getEventDataJson();
     const a: string[] = [];
 
@@ -122,7 +126,7 @@ export class JsonInfoComponent implements OnInit {
       a.push(s2);
     }
 
-    if (o.NameTable.length > 2) {
+    if (o.NameTable.length > 2 || includeEmptyList) {
       for (const s3 of o.NameTable) {
         a.push(s3);
       }
@@ -132,7 +136,7 @@ export class JsonInfoComponent implements OnInit {
       a.push(s4);
     }
 
-    if (o.FleetList.length > 2) {
+    if (o.FleetList.length > 2 || includeEmptyList) {
       for (const s5 of o.FleetList) {
         a.push(s5);
       }
@@ -162,5 +166,4 @@ export class JsonInfoComponent implements OnInit {
 
     this.output = a;
   }
-
 }

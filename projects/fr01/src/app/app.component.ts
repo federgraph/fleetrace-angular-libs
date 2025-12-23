@@ -1,26 +1,50 @@
-import { Component, ViewChild, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, ViewChild, ChangeDetectorRef, OnInit, inject } from '@angular/core';
 import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { BibComponent } from 'fr-local';
-import { EventComponent } from 'fr-local';
-import { RaceComponent } from 'fr-local';
-import { EntriesComponent } from 'fr-local';
-import { TimingWidgetComponent } from 'fr-local';
-import { TBOManager } from 'fleetrace';
-import { IEventDataItem, TEventDataAsset } from 'fr-local';
-import { TStringList } from 'fleetrace';
-import { TimingButtonsComponent } from 'fr-local';
-import { EventProps, EntryRow, EventParams } from 'fr-local';
-import { TExcelExporter } from 'fleetrace';
-import { TableID } from 'fleetrace';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { CurrentNumbers } from 'fleetrace';
+import {
+  BibComponent,
+  EntriesComponent,
+  EventComponent,
+  RaceComponent,
+  TimingWidgetComponent,
+  IEventDataItem,
+  TEventDataAsset,
+  TimingButtonsComponent,
+  EventProps,
+  EntryRow,
+  EventParams,
+  IconData,
+  PreTextIcons,
+  TextAreaIcons,
+  JsonInfoComponent,
+  FormEventPropsQuickComponent,
+  FormEventParamsQuickComponent,
+  FormEntryRowComponent,
+} from './../../../../dist/fr-local';
+
+import {
+  TBOManager,
+  TStringList,
+  TExcelExporter,
+  TableID,
+  CurrentNumbers,
+} from './../../../../dist/fleetrace';
+
+import { ApiComponent } from './../../../../dist/fr-remote';
+
 import { BreakpointSet } from './shared/breakpoint-set';
-import { IconData, PreTextIcons, TextAreaIcons } from 'fr-local';
+
+import { AppModule } from './app.module';
+
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpParams } from '@angular/common/http';
-import { ApiComponent } from 'fr-remote';
+import { MatFormField } from '@angular/material/form-field';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
+import { MatToolbar } from '@angular/material/toolbar';
 
 enum Page {
   None,
@@ -40,13 +64,32 @@ enum Page {
   JsonInfo,
   Legend,
   Save,
-  Load
+  Load,
+  TStringList,
 }
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    AppModule,
+    JsonInfoComponent,
+    FormEventPropsQuickComponent,
+    FormEventParamsQuickComponent,
+    EventComponent,
+    FormEntryRowComponent,
+    BibComponent,
+    EntriesComponent,
+    RaceComponent,
+    MatFormField,
+    TimingButtonsComponent,
+    MatIcon,
+    MatToolbar
+],
 })
 export class AppComponent implements OnInit {
   title = 'FR04';
@@ -61,10 +104,7 @@ export class AppComponent implements OnInit {
   autoSaveOptionsKey = 'fr03-app-options';
   autoSaveDataKey = 'fr03-app-data';
 
-  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
-    .pipe(
-      map(result => result.matches)
-    );
+  isHandset$: Observable<boolean>;
 
   CurrentPage: Page = Page.Event;
 
@@ -112,29 +152,17 @@ export class AppComponent implements OnInit {
 
   ParamsVisible = false;
   PropsVisible = false;
-
   EntryVisible = false;
 
   SaveVisible = false;
   LoadVisible = false;
 
-  @ViewChild('eventTab', { static: false })
-  eventTab: EventComponent;
-
-  @ViewChild('raceTab', { static: false })
-  raceTab: RaceComponent;
-
-  @ViewChild('entriesTab', { static: false })
-  entriesTab: EntriesComponent;
-
-  @ViewChild('widgetTab', { static: false })
-  widgetTab: TimingWidgetComponent;
-
-  @ViewChild('timingTab', { static: false })
-  timingTab: TimingButtonsComponent;
-
-  @ViewChild('bibInfo', { static: false })
-  bibTab: BibComponent;
+  @ViewChild('eventTab', { static: false }) eventTab: EventComponent;
+  @ViewChild('raceTab', { static: false }) raceTab: RaceComponent;
+  @ViewChild('entriesTab', { static: false }) entriesTab: EntriesComponent;
+  @ViewChild('widgetTab', { static: false }) widgetTab: TimingWidgetComponent;
+  @ViewChild('timingTab', { static: false }) timingTab: TimingButtonsComponent;
+  @ViewChild('bibInfo', { static: false }) bibTab: BibComponent;
 
   private SL: TStringList;
   private Asset: IEventDataItem;
@@ -164,8 +192,12 @@ export class AppComponent implements OnInit {
   textAreaIcons: IconData[];
   preTextIcons: IconData[];
 
-  constructor(private cdref: ChangeDetectorRef, public BOManager: TBOManager,
-              private breakpointObserver: BreakpointObserver, public snackBar: MatSnackBar) {
+  private cdref = inject(ChangeDetectorRef);
+  public BOManager = inject(TBOManager);
+  private breakpointObserver = inject(BreakpointObserver);
+  public snackBar = inject(MatSnackBar);
+
+  constructor() {
     this.BOManager.BigButtonRow = false;
     this.BOManager.IsDebug = false;
     this.SL = new TStringList();
@@ -176,6 +208,10 @@ export class AppComponent implements OnInit {
     this.initCurrent();
     this.textAreaIcons = IconData.readIconData(TextAreaIcons);
     this.preTextIcons = IconData.readIconData(PreTextIcons);
+
+    this.isHandset$ = this.breakpointObserver
+      .observe(Breakpoints.Handset)
+      .pipe(map((result) => result.matches));
   }
 
   breakpointChanged(state: BreakpointState) {
@@ -241,21 +277,22 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.initParams();
 
-    this.breakpointObserver.observe(Breakpoints.Small).subscribe(
-      (state: BreakpointState) => { this.handleBreakpointSmall(state); }
-    );
-    this.breakpointObserver.observe(Breakpoints.XSmall).subscribe(
-      (state: BreakpointState) => { this.handleBreakpointSmall(state); }
-    );
+    this.breakpointObserver.observe(Breakpoints.Small).subscribe((state: BreakpointState) => {
+      this.handleBreakpointSmall(state);
+    });
+    this.breakpointObserver.observe(Breakpoints.XSmall).subscribe((state: BreakpointState) => {
+      this.handleBreakpointSmall(state);
+    });
 
-    this.breakpointObserver.observe(this.breakpointSet.all()).subscribe(
-      (state: BreakpointState) => { this.breakpointChanged(state); }
-    );
+    this.breakpointObserver
+      .observe(this.breakpointSet.all())
+      .subscribe((state: BreakpointState) => {
+        this.breakpointChanged(state);
+      });
   }
 
   autoLoad() {
     const t = localStorage.getItem(this.autoSaveDataKey);
-
     if (t === undefined) {
       // do nothing
     } else if (t === null) {
@@ -276,7 +313,9 @@ export class AppComponent implements OnInit {
     localStorage.setItem(this.autoSaveDataKey, SL.Text);
   }
 
-  get EventName(): string { return this.BOManager.BO.EventProps.EventName; }
+  get EventName(): string {
+    return this.BOManager.BO.EventProps.EventName;
+  }
 
   updateThrowouts(): void {
     this.Throwouts = this.BOManager.BO.EventProps.Throwouts;
@@ -458,30 +497,61 @@ export class AppComponent implements OnInit {
     this.LoadVisible = false;
 
     switch (p) {
-      case Page.Bib: this.BibVisible = true; break;
+      case Page.Bib:
+        this.BibVisible = true;
+        break;
 
       case Page.Entry:
         this.EntryVisible = true;
         this.EntriesVisible = true;
         break;
 
-      case Page.Entries: this.EntriesVisible = true; break;
-      case Page.Race: this.RaceVisible = true; break;
-      case Page.Event: this.EventVisible = true; break;
+      case Page.Entries:
+        this.EntriesVisible = true;
+        break;
+      case Page.Race:
+        this.RaceVisible = true;
+        break;
+      case Page.Event:
+        this.EventVisible = true;
+        break;
 
-      case Page.Params: this.ParamsVisible = true; break;
-      case Page.Props: this.PropsVisible = true; break;
-      case Page.TextArea: this.TextAreaVisible = true; break;
-      case Page.PreText: this.PreTextVisible = true; break;
-      case Page.AssetMenu: this.AssetMenuVisible = true; break;
-      case Page.EventMenu: this.EventMenuVisible = true; break;
-      case Page.HelpText: this.HelpTextVisible = true; break;
-      case Page.JsonInfo: this.JsonInfoVisible = true; break;
-      case Page.Legend: this.LegendVisible = true; break;
-      case Page.Save: this.SaveVisible = true; break;
-      case Page.Load: this.LoadVisible = true; break;
+      case Page.Params:
+        this.ParamsVisible = true;
+        break;
+      case Page.Props:
+        this.PropsVisible = true;
+        break;
+      case Page.TextArea:
+        this.TextAreaVisible = true;
+        break;
+      case Page.PreText:
+        this.PreTextVisible = true;
+        break;
+      case Page.AssetMenu:
+        this.AssetMenuVisible = true;
+        break;
+      case Page.EventMenu:
+        this.EventMenuVisible = true;
+        break;
+      case Page.HelpText:
+        this.HelpTextVisible = true;
+        break;
+      case Page.JsonInfo:
+        this.JsonInfoVisible = true;
+        break;
+      case Page.Legend:
+        this.LegendVisible = true;
+        break;
+      case Page.Save:
+        this.SaveVisible = true;
+        break;
+      case Page.Load:
+        this.LoadVisible = true;
+        break;
 
-      default: break;
+      default:
+        break;
     }
   }
 
@@ -587,16 +657,27 @@ export class AppComponent implements OnInit {
     this.reduceTo(Page.Event);
 
     switch (ev) {
-      case 1: this.readNameTest(); break;
-      case 2: this.readFleetTest(); break;
+      case 1:
+        this.readNameTest();
+        break;
+      case 2:
+        this.readFleetTest();
+        break;
 
-      case 3: this.read1991(); break;
-      case 4: this.read1997(); break;
+      case 3:
+        this.read1991();
+        break;
+      case 4:
+        this.read1997();
+        break;
 
-      case 5: this.readExample(); break;
-      default: this.readEmpty(); break;
+      case 5:
+        this.readExample();
+        break;
+      default:
+        this.readEmpty();
+        break;
     }
-
   }
 
   clearBtnClick() {
@@ -630,6 +711,7 @@ export class AppComponent implements OnInit {
     for (const s of data) {
       this.BOManager.BO.Dispatch(s);
     }
+
     this.calcRace();
     this.calcEvent();
   }
@@ -678,7 +760,6 @@ export class AppComponent implements OnInit {
       }
 
       if (cr) {
-
         cr.FN = event.N1 || '';
         cr.LN = event.N2 || '';
         cr.SN = event.N3 || '';
@@ -794,16 +875,18 @@ export class AppComponent implements OnInit {
         break;
 
       case 1:
-        const o = this.BOManager.BO.EventNode.FindBib(this.CurrentBib).Race[this.CurrentRace].inspect();
+        const o = this.BOManager.BO.EventNode.FindBib(this.CurrentBib).Race[
+          this.CurrentRace
+        ].inspect();
         this.TestOutput = JSON.stringify(o, null, 2);
         break;
 
       case 3:
-        // if (this.menuTab)
-        //   this.TestOutput = this.menuTab.printEventMenu();
-        // else
-        //   this.TestOutput = this.info('click on button while event menu is shown');
-        // break;
+      // if (this.menuTab)
+      //   this.TestOutput = this.menuTab.printEventMenu();
+      // else
+      //   this.TestOutput = this.info('click on button while event menu is shown');
+      // break;
     }
   }
 
@@ -1096,7 +1179,7 @@ export class AppComponent implements OnInit {
   createNew(event: EventParams) {
     const ed: IEventDataItem = {
       EventName: 'New Event',
-      EventData: ''
+      EventData: '',
     };
 
     const sl: string[] = [];
@@ -1237,7 +1320,7 @@ export class AppComponent implements OnInit {
     // }
   }
 
-  processQueue(calc: boolean = true) {
+  processQueue(calc = true) {
     let msg: string;
     while (this.BOManager.BO.msgQueueR.length > 0) {
       msg = this.BOManager.BO.msgQueueR.pop();
@@ -1262,16 +1345,14 @@ export class AppComponent implements OnInit {
       this.TestOutput = this.info('Queue is empty');
     } else {
       const SL = new TStringList();
-      for (const t of l) {
-        SL.Add(t);
+      for (const s of l) {
+        SL.Add(s);
       }
       this.TestOutput = SL.Text;
     }
   }
 
-  noop() {
-
-  }
+  noop() {}
 
   handleWebSocketMsg(msg: string) {
     this.lastWebSocketMsg = msg;
@@ -1287,7 +1368,8 @@ export class AppComponent implements OnInit {
 
   onNotify(nid: number) {
     switch (nid) {
-      case 1: this.clearBtnClick();
+      case 1:
+        this.clearBtnClick();
     }
   }
 
@@ -1308,7 +1390,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  updateAfterProcessingQueue(calc: boolean = true) {
+  updateAfterProcessingQueue(calc = true) {
     if (calc && this.raceTab && this.RaceVisible) {
       this.calcRace();
       this.calcEvent();
@@ -1324,9 +1406,14 @@ export class AppComponent implements OnInit {
 
   handleUpdate(value: number) {
     switch (value) {
-      case 1: this.updateAfterProcessingQueue(); break;
-      case 2: this.showQueue(); break;
-      default: this.updateAll();
+      case 1:
+        this.updateAfterProcessingQueue();
+        break;
+      case 2:
+        this.showQueue();
+        break;
+      default:
+        this.updateAll();
     }
 
     this.updateAll();
@@ -1408,5 +1495,4 @@ export class AppComponent implements OnInit {
   showLess() {
     this.more = false;
   }
-
 }

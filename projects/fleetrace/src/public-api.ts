@@ -1,8 +1,6 @@
 /*
- * Public API Surface of fr
+ * Public API Surface of fleetrace
  */
-
-export * from './fleetrace.module';
 
 export * from './bo/bo-base';
 export * from './bo/bo-main-params';
